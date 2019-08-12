@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyTitle>Command Prompt</AssemblyTitle>
+    <AssemblyDescription>A method of configuring commands for an REPL prompt.</AssemblyDescription>
+    <AssemblyVersion>0.0.1</AssemblyVersion>
+    <Authors>Navron</Authors>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<PackageId>CommandPrompt</PackageId>
+	<PackageDescription>A method of configuring commands for an REPL prompt.</PackageDescription>
+    <PackageVersion>$(AssemblyVersion)</PackageVersion>
+    <PackageTags>Command Prompt;Console;REPL</PackageTags>
+    <PackageProjectUrl>https://github.com/navron/CommandPrompt</PackageProjectUrl>
+    <License>https://github.com/navron/CommandPrompt/blob/master/LICENSE</License>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/navron/CommandPrompt</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReadLine" Version="2.0.1" />
+  </ItemGroup>
+
+</Project>
