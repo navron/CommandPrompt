@@ -19,7 +19,7 @@ namespace CommandPrompt
         public string HistoryFile { get; set; } = string.Empty;
 
         public string HistoryEnabled { get; set; } = "True";
-        
+
         #endregion
 
         public string CurrentFolder { get; set; } = string.Empty;
@@ -54,14 +54,13 @@ namespace CommandPrompt
         /// </summary>
         public object GetObjectOfType(Type type)
         {
-            var ob = new object();
             // First Scan the Objects List for any matching type and return it
             if (type.IsInterface)
-            {
-                ob = Objects.FirstOrDefault(type.IsInstanceOfType);
-            }
+                return Objects.FirstOrDefault(type.IsInstanceOfType) ??
+                       Objects.FirstOrDefault(ob => ob.GetType() == type);
+
             // Scan the Objects List for an concrete matching type and return it
-            return ob == null ? Objects.FirstOrDefault(ob2 => ob2.GetType() == type) : null;
+            return Objects.FirstOrDefault(ob => ob.GetType() == type);
         }
         #endregion
 
