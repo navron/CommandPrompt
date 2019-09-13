@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CommandPrompt\CommandPrompt.csproj" />
+    <ProjectReference Include="..\CommandPrompt\CommandPrompt.csproj" />
   </ItemGroup>
 
 </Project>

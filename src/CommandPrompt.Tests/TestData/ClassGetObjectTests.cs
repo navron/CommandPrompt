@@ -13,7 +13,7 @@ namespace CommandPrompt.Tests.TestData
             config.Objects = new object[] { data2A };
             var prompt = new Prompt(config);
 
-            prompt.RunCommand("2aCmd1");
+            prompt.ProcessPrompt("2aCmd1");
             data2A.Name.Should().Be("2aCmd1");
         }
 
@@ -26,7 +26,7 @@ namespace CommandPrompt.Tests.TestData
             config.Objects = new object[] { data2A, data2B };
             var prompt = new Prompt(config);
 
-            prompt.RunCommand("2aCmd1");
+            prompt.ProcessPrompt("2aCmd1");
             data2A.Name.Should().Be("2aCmd1");
         }
 
@@ -39,7 +39,7 @@ namespace CommandPrompt.Tests.TestData
             config.Objects = new object[] { data2B, data2A };
             var prompt = new Prompt(config);
 
-            prompt.RunCommand("2aCmd1");
+            prompt.ProcessPrompt("2aCmd1");
             data2A.Name.Should().Be("2aCmd1");
         }
 
@@ -51,12 +51,12 @@ namespace CommandPrompt.Tests.TestData
             config.Objects = new object[] { data2B };
             var prompt = new Prompt(config);
 
-            prompt.RunCommand("2bCmd1");  // 2b New Class Instance between Commands
+            prompt.ProcessPrompt("2bCmd1");  // 2b New Class Instance between Commands
             data2B.Name.Should().Be("2bCmd1");
             data2B.ClassCount.Should().Be(1);
             data2B.UsageCount.Should().Be(1);
 
-            prompt.RunCommand("2bCmd1");
+            prompt.ProcessPrompt("2bCmd1");
             data2B.ClassCount.Should().Be(1); // Keep Class Reused between Commands, that same count
             data2B.UsageCount.Should().Be(2);
         }
@@ -69,11 +69,11 @@ namespace CommandPrompt.Tests.TestData
             config.Objects = new object[] { data2A };
             var prompt = new Prompt(config);
 
-            prompt.RunCommand("2aCmd1"); // 2a Keep Class between Commands
+            prompt.ProcessPrompt("2aCmd1"); // 2a Keep Class between Commands
             data2A.Name.Should().Be("2aCmd1");
             data2A.ClassCount.Should().Be(1);
 
-            prompt.RunCommand("2aCmd1");
+            prompt.ProcessPrompt("2aCmd1");
             data2A.ClassCount.Should().Be(1); 
             data2A.UsageCount.Should().Be(2);
         }
@@ -86,7 +86,7 @@ namespace CommandPrompt.Tests.TestData
             config.Objects = new object[] { data2C };
             var prompt = new Prompt(config);
 
-            prompt.RunCommand("2cCmd1");
+            prompt.ProcessPrompt("2cCmd1");
             data2C.Name.Should().Be("2cCmd1");
         }
     }

@@ -1,87 +1,78 @@
 ﻿
 using System;
-using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace CommandPrompt
 {
-    public interface IPromptConfiguration
-    {
-        string PromptPreFix { get; }
-        bool ScanAssemblies { get; }
-        string[] Types { get; }
-
-        string GetOption(string option);
-        object GetObjectOfType(Type type);
-        object[] Objects { get; set; }
-        bool HasClassInstance(Type pCmdClassType);
-        object GetClassInstance(Type classType);
-        void StoreClassInstance(object classInstance);
-    }
-
+    /// <summary>
+    /// Configuration for the Prompt
+    /// </summary>
+    /// <remarks>May be overridden to for to provide custom actions</remarks>
     public class PromptConfiguration : IPromptConfiguration
     {
-        public string PromptPreFix { get; set; } = ">";
+        #region Prompt Options
+
+        public string PromptPostFix { get; set; } = ">";
+        public string PromptPreFix { get; set; } = string.Empty;
+
         public string HistoryFile { get; set; } = string.Empty;
 
-        public bool ScanAssemblies { get; }
-        public string[] Types { get; }
+        public string HistoryEnabled { get; set; } = "True";
+        
+        #endregion
+
+        public string CurrentFolder { get; set; } = string.Empty;
+
+        #region IPromptConfiguration
+
+        /// <summary>
+        /// Gets an 
+        /// </summary>
+        /// <param name="option"></param>
+        /// <returns></returns>
         public string GetOption(string option)
         {
             switch (option)
             {
-                case "PromptPostFix": return PromptPreFix;
-                case "HistoryFile": return string.Empty;
+                case "Prompt": return $"{PromptPreFix}{CurrentFolder}{PromptPostFix}";
+                case "HistoryFile": return HistoryFile;
+                case "HistoryEnabled": return HistoryEnabled;
             }
 
             return string.Empty;
         }
 
+        /// <summary>
+        /// Returns a array of Assemblies to scan for
+        /// </summary>
+        /// <remarks>Don't scan Assemblies that begin with 'System' these will not contain Prompt CommandText attributes </remarks>
+        public Assembly[] GetScanForAssemblies => Assemblies ?? AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.FullName.StartsWith("System")).ToArray();
+
+        /// <summary>
+        /// Gets an Object that may be passed to an CommandText Prompt method or class
+        /// </summary>
         public object GetObjectOfType(Type type)
         {
+            var ob = new object();
+            // First Scan the Objects List for any matching type and return it
             if (type.IsInterface)
             {
-                // Scan the Objects List for any  matching type and return it
-                foreach (object ob in Objects)
-                {
-                    if(type.IsInstanceOfType(ob))
-                        return ob;
-                }
+                ob = Objects.FirstOrDefault(type.IsInstanceOfType);
             }
             // Scan the Objects List for an concrete matching type and return it
-            foreach (object ob in Objects)
-            {
-                if (ob.GetType() == type)
-                    return ob;
-            }
-
-
-            return null; // Not Found
+            return ob == null ? Objects.FirstOrDefault(ob2 => ob2.GetType() == type) : null;
         }
+        #endregion
+
+        /// <summary>
+        /// Specify the Assemblies that should be scanned for Prompt Commands
+        /// </summary>
+        public Assembly[] Assemblies { get; set; }
+
+        /// <summary>
+        /// An array of initialise objects to be passed to either an CommandText Prompt method or class
+        /// </summary>
         public object[] Objects { get; set; }
-
-
-        public bool HasClassInstance(Type pCmdClassType)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public object GetClassInstance(Type classType)
-        {
-            foreach (object promptClass in CmdPromptClasses)
-            {
-                if (promptClass.GetType() == classType)
-                    return promptClass;
-            }
-
-            return null; // Not Found
-        }
-
-        public void StoreClassInstance(object classInstance)
-        {
-            CmdPromptClasses.Add(classInstance);
-        }
-        internal List<object> CmdPromptClasses = new List<object>();
-
     }
 }

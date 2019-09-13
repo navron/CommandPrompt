@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
 using Xunit;
 // ReSharper disable UnusedMember.Local
@@ -35,7 +34,7 @@ namespace CommandPrompt.Tests
             var prompt = new Prompt(config);
 
             var cmd = $"{promptCmd} {pramText}".Trim();
-            prompt.RunCommand(cmd);
+            prompt.ProcessPrompt(cmd);
             methodRun.Should().Be(promptCmd);
             methodValue.Should().Be(pramText);
         }

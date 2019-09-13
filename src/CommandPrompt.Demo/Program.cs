@@ -21,8 +21,10 @@ namespace CommandPrompt.Demo
   
                 // Add other Tasks i.e. service task 
 
+                // Wait for any of the task to exit, this would indicate that the application is shutting down
                 Task.WaitAny(tasks.ToArray());
             }
+            Console.WriteLine("Good Bye World!");
         }
     }
 }

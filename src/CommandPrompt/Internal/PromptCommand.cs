@@ -5,23 +5,40 @@ namespace CommandPrompt.Internal
 {
     internal class PromptCommand
     {
-        public Type PromptMethodType;
-        public object[] test;
-        public string HelpText { get; set; }
-        public string Command { get; set; }
-        public object PromptAttributeTypeId { get; set; }
-        public string MethodInfo { get; set; }
+        /// <summary>
+        /// The CommandText Text
+        /// </summary>
+        public string CommandText { get; set; }
+
+        /// <summary>
+        /// If the Method has parameters then the 'StartWith' Flag will be true
+        /// </summary>
+        public bool StartWith { get; set; }
+
+        /// <summary>
+        /// Help Text for this command
+        /// </summary>
+        public string HelpText { get; set; }    
+        
+        /// <summary>
+        /// The Method of this command
+        /// </summary>
+        public MethodInfo MethodInfo { get; set; }
+        /// <summary>
+        /// The Class where this method is located
+        /// </summary>
         public Type ClassType { get; set; }
 
-        // Method Parameter Info
-        public ParameterInfo[] Parameters { get; set; }
+        /// <summary>
+        /// If the Class instance is to be kept between prompt commands, then set this flag
+        /// </summary>
+        /// <remarks>From Prompt Class Attribute</remarks>
+        public bool KeepClassInstance { get; set; }
 
-        // If the Method has parameters then the 'StartWith' Flag will be true
-        public bool StartWith { get; set; }
-        public string CommandLower { get; set; }
-
-        // Keep the Instance of the Class between prompt commands
-        public bool ClassKeep { get; set; }
+        /// <summary>
+        ///  The folder of that this command belongs to
+        /// </summary>
+        /// <remarks>From Prompt Class Attribute</remarks>
         public string Folder { get; set; }
     }
 }
