@@ -27,9 +27,10 @@ namespace CommandPrompt
             var cmd = string.Empty;
             while (!string.Equals(cmd, "exit", StringComparison.OrdinalIgnoreCase))
             {
+                var promptText = $"{prompt.Configuration.GetOption("PromptPreFix")}{prompt.CurrentFolder}{prompt.Configuration.GetOption("PromptPostFix")}";
                 // ReadLine is not await able, hence running as a Task.Run. Improve foreign project to 
                 // include ReadLine.ReadAsync( with CancellationToken)
-                await Task.Run(() => cmd = ReadLine.Read($"{configuration?.GetOption("Prompt")}"), token);
+                await Task.Run(() => cmd = ReadLine.Read(promptText), token);
                 try
                 {
                     //  _ = prompt.ProcessPrompt(cmd, prompt.commandList, prompt.configuration);
@@ -52,9 +53,12 @@ namespace CommandPrompt
         {
             try
             {
-                Configuration = configuration;
-                ReadLine.HistoryEnabled = string.Equals(Configuration.GetOption("HistoryEnabled"), "True", StringComparison.OrdinalIgnoreCase);
+                // If Configuration is null, use default settings
+                Configuration = configuration ?? new PromptConfiguration();
 
+                ReadLine.HistoryEnabled = string.Equals(Configuration.GetOption("HistoryEnabled"), true.ToString());
+
+                CommandClass = BuildCommands.ScanForPromptClasses(configuration);
                 CommandList = BuildCommands.ScanForPrompt(configuration);
 
                 HistoryFile.Load(configuration);
@@ -66,7 +70,10 @@ namespace CommandPrompt
                 Console.WriteLine(e);
             }
         }
-       
+
+        internal List<PromptClass> CommandClass { get; set; }
+        internal string CurrentFolder { get; set; }
+
         /// <summary>
         /// Run the given command
         /// </summary>

@@ -8,12 +8,17 @@ namespace CommandPrompt.Demo
 {
     class Program
     {
+
+
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
             PromptTests.IncludeThisAss();
             var tasks = new List<Task>();
             var pConfig = new PromptConfiguration();
+            pConfig.ApplicationHelp = "Command Prompt Demo";
+
+
 
             using (var cancellationTokenSource = new System.Threading.CancellationTokenSource())
             {

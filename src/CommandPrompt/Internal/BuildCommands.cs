@@ -56,5 +56,32 @@ namespace CommandPrompt.Internal
 
             return command;
         }
+
+        internal static List<PromptClass> ScanForPromptClasses(IPromptConfiguration configuration)
+        {
+            var list = new List<PromptClass>();
+            var assemblies = configuration.GetScanForAssemblies;
+            foreach (var assembly in assemblies.AsParallel()) // in case of a large number of assemblies, do this in parallel
+            {
+                if (assembly.GlobalAssemblyCache) continue; // Don't want to scan Assembly in the global cache, this may become a defect 
+
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (!(type.GetCustomAttributes(typeof(PromptClassAttribute), true).FirstOrDefault() is
+                        PromptClassAttribute promptClassAttribute)) continue;
+
+                    var folder = new PromptClass
+                    {
+                        TypeId = promptClassAttribute.TypeId,
+                        Folder = promptClassAttribute.Folder,
+                        KeepClassInstance = promptClassAttribute.Keep,
+                        Help = promptClassAttribute.Help
+                    };
+                    list.Add(folder);
+                }
+            }
+
+            return list;
+        }
     }
 }
