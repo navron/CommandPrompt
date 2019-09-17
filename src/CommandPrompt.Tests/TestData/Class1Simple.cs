@@ -6,7 +6,7 @@ namespace CommandPrompt.Tests.TestData
     public class Class1Simple
     {
 
-        [Prompt("SimpleCmd1", HelpText = "SimpleCmd's first command method ")]
+        [Prompt("SimpleCmd1", Help = "SimpleCmd's first command method ")]
         public void SimpleCmd1()
         {
             Console.WriteLine($"Running Method 'SimpleCmd1'");

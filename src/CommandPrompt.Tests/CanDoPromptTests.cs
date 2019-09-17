@@ -12,7 +12,7 @@ namespace CommandPrompt.Tests
         private static string methodRun;
         private static string methodValue;
 
-        [Prompt("CanDo", HelpText = "I Can Do it")]
+        [Prompt("CanDo", Help = "I Can Do it")]
         public void CanDo()
         {
             Console.WriteLine("Running Method 'CanDo'");
@@ -39,7 +39,7 @@ namespace CommandPrompt.Tests
             methodValue.Should().Be(pramText);
         }
 
-        [Prompt("DoString", HelpText = "Parse an String")]
+        [Prompt("DoString", Help = "Parse an String")]
         public void DoString(string pram)
         {
             Console.WriteLine($"Running Method 'DoString' with and parameter:{pram}");
@@ -47,7 +47,7 @@ namespace CommandPrompt.Tests
             methodValue = pram;
         }
 
-        [Prompt("DoInt", HelpText = "Parse an integer")]
+        [Prompt("DoInt", Help = "Parse an integer")]
         public void DoInt(int pram)
         {
             Console.WriteLine($"Running Method 'DoInt' with and parameter:{pram}");
@@ -55,7 +55,7 @@ namespace CommandPrompt.Tests
             methodValue = $"{pram}";
         }
 
-        [Prompt("DoULong", HelpText = "Parse an ULong")]
+        [Prompt("DoULong", Help = "Parse an ULong")]
         public void DoULong(ulong pram)
         {
             Console.WriteLine($"Running Method 'DoULong' with and parameter:{pram}");
@@ -63,7 +63,7 @@ namespace CommandPrompt.Tests
             methodValue = $"{pram}";
         }
 
-        [Prompt("DoStringArray", HelpText = "Parse an String Array")]
+        [Prompt("DoStringArray", Help = "Parse an String Array")]
         public void DoStringArray(string[] pram)
         {
             Console.WriteLine($"Running Method 'DoStringArray' with and parameter:{pram}");
@@ -71,7 +71,7 @@ namespace CommandPrompt.Tests
             methodValue = $"{string.Join(" ",pram)}";
         }
 
-        [Prompt("DoIntArray", HelpText = "Parse an Integer Array")]
+        [Prompt("DoIntArray", Help = "Parse an Integer Array")]
         public void DoIntArray(int[] pram)
         {
             Console.WriteLine($"Running Method 'DoIntArray' with and parameter:{pram}");
@@ -79,7 +79,7 @@ namespace CommandPrompt.Tests
             methodValue = $"{string.Join(" ", pram)}";
         }
 
-        [Prompt("DoStringInt", HelpText = "Parse an String then an Integer Array")]
+        [Prompt("DoStringInt", Help = "Parse an String then an Integer Array")]
         public void DoStringInt(string myString, int myInt)
         {
             Console.WriteLine($"Running Method 'DoStringInt' with and myString:{myString}, myInt:{myInt}");

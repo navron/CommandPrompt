@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CommandPrompt.Commands
 {
-    [PromptClass (Folder = "Hidden")]
+    [PromptClass ("Hidden")]
     internal class HelpCmd
     {
         private readonly Prompt prompt;
@@ -16,7 +16,7 @@ namespace CommandPrompt.Commands
             this.prompt = prompt;
         }
 
-        [Prompt("help", HelpText = "Shows help", Hide = true)]
+        [Prompt("help", Help = "Shows help", Hide = true)]
         public void Help(string cmdOrFolder)
         {
             var appHelp = prompt.Configuration.GetOption("ApplicationHelp");
@@ -70,7 +70,7 @@ namespace CommandPrompt.Commands
             }
         }
 
-        //[Prompt("help", HelpText = "Shows help", Hide = true)]
+        //[Prompt("help", Help = "Shows help", Hide = true)]
         //public void Help()
         //{
         //    Console.WriteLine($"Help Help");
@@ -86,7 +86,7 @@ namespace CommandPrompt.Commands
         //            str.Append($" {info.Name}");
 
         //        }
-        //        Console.WriteLine($"{str,-30} {command.HelpText}");
+        //        Console.WriteLine($"{str,-30} {command.Help}");
         //    }
 
         //    // Limit to current Folder

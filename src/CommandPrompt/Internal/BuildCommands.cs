@@ -23,10 +23,10 @@ namespace CommandPrompt.Internal
                 {
                     foreach (var methodInfo in type.GetMethods())
                     {
-                        if (!(methodInfo.GetCustomAttribute(typeof(PromptAttribute), true) is PromptAttribute attribute))
-                            continue;
-
-                        list.Add(GetPromptInformation(type, methodInfo, attribute));
+                        var attributes = methodInfo.GetCustomAttributes();
+                        list.AddRange(from attribute in attributes.OfType<PromptAttribute>()
+                            let info = GetPromptInformation(type, methodInfo, attribute)
+                            select GetPromptInformation(type, methodInfo, attribute));
                     }
                 }
             }
@@ -38,7 +38,7 @@ namespace CommandPrompt.Internal
         {
             var command = new PromptCommand
             {
-                HelpText = attribute.HelpText,
+                HelpText = attribute.Help,
                 CommandText = attribute.Command,
                 MethodInfo = methodInfo,
                 ClassType = classType,

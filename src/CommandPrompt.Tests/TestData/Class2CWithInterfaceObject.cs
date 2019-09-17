@@ -14,7 +14,7 @@ namespace CommandPrompt.Tests.TestData
 
         public Data2C DataObject { get; set; }
 
-        [Prompt("2cCmd1", HelpText = "Class2c's first command method ")]
+        [Prompt("2cCmd1", Help = "Class2c's first command method ")]
         public void Cmd1()
         {
             Console.WriteLine($"Running Method 'Class2b Cmd1'");

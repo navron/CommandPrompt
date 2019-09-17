@@ -17,7 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandPrompt.Extension.AutoFac", "src\CommandPrompt.Extension.AutoFac\CommandPrompt.Extension.AutoFac.csproj", "{FEE4CF13-E417-41FB-941D-945E758B266C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandPrompt.Extension.AutoFac", "src\CommandPrompt.Extension.AutoFac\CommandPrompt.Extension.AutoFac.csproj", "{FEE4CF13-E417-41FB-941D-945E758B266C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandPrompt.Extension.MemoryDump", "CommandPrompt.Extension.MemoryDump\CommandPrompt.Extension.MemoryDump.csproj", "{D456BD25-5959-4A4A-8887-CDEF0FFBC664}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{FEE4CF13-E417-41FB-941D-945E758B266C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEE4CF13-E417-41FB-941D-945E758B266C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEE4CF13-E417-41FB-941D-945E758B266C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D456BD25-5959-4A4A-8887-CDEF0FFBC664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D456BD25-5959-4A4A-8887-CDEF0FFBC664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D456BD25-5959-4A4A-8887-CDEF0FFBC664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D456BD25-5959-4A4A-8887-CDEF0FFBC664}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

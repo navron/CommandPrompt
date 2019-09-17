@@ -11,7 +11,7 @@
         }
 
 
-        [Prompt("rescan", HelpText = "Re-scan the assemblies for prompt configurations", Hide = true)]
+        [Prompt("rescan", Help = "Re-scan the assemblies for prompt configurations", Hide = true)]
         public void Rescan(string folder)
         {
 

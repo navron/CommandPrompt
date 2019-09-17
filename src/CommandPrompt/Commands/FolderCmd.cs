@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
+using CommandPrompt.Internal;
 
 namespace CommandPrompt.Commands
 {
-
-    [PromptClass()]
     internal class FolderCmd
     {
         private readonly Prompt prompt;
@@ -14,19 +15,40 @@ namespace CommandPrompt.Commands
             this.prompt = prompt;
         }
 
-        [Prompt("cd", HelpText = "Change folder")]
+        readonly List<string> rootFolderCmd = new List<string> { ".", "..", "/", "\\" };
+
+        [Prompt("cd", Help = "Change folder", HelpDetail = "A folder is use to limit the help commands\n dots or slashes can be used to go back to the root folder\nMore that one class can have the same folder and thus can be used to make a super set of commands")]
         public void ChangeFolder(string folder)
         {
-            // use dos or unix format?
-            var isFolderValid = prompt.CommandClass.Any(c => string.Equals(c.Folder, folder, StringComparison.OrdinalIgnoreCase));
-            if (isFolderValid)
+            if (rootFolderCmd.Contains(folder))
             {
-                prompt.CurrentFolder = folder.ToUpperInvariant();
-
+                prompt.CurrentFolder = string.Empty;
+                return;
             }
 
-            // .. back one
-            // / route folder
+            // use dos or unix format?
+            var isFolderValid = prompt.CommandClass.FirstOrDefault(c => string.Equals(c.Folder, folder, StringComparison.OrdinalIgnoreCase));
+            if (isFolderValid != null)
+            {
+                prompt.CurrentFolder = isFolderValid.Folder;
+            }
+            else
+            {
+                Console.WriteLine($"Unknown folder:{folder}");
+            }
+        }
+
+        [Prompt("ls Folders", Help = "List All Folders")]
+        [Prompt("List Folders", Help = "List All Folders")]
+        public void ListFolders()
+        {
+            var list = prompt.CommandClass.GroupBy(g => g.Folder).Where(grouping => grouping.Key != null).ToList();
+
+            Console.WriteLine($"Folders:{list.Count}");
+            foreach (var grouping in list)
+            {
+                Console.WriteLine($"  {grouping.Key}");
+            }
         }
     }
 }
