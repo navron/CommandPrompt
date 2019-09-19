@@ -16,13 +16,22 @@ namespace CommandPrompt
         public string PromptPostFix { get; set; } = ">";
         public string PromptPreFix { get; set; } = string.Empty;
 
+        /// <summary>
+        /// If configured the prompt history will be saved to given file name on save and loaded at start up
+        /// </summary>
         public string HistoryFile { get; set; } = string.Empty;
 
-        public string HistoryEnabled { get; set; } = "True";
+        /// <summary>
+        /// Enable using history on the prompt, i.e. the up and down arrows
+        /// </summary>
+        public bool HistoryEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Sets the Application Description
+        /// </summary>
+        public string ApplicationHelp { get; set; }
 
         #endregion
-
-        public string CurrentFolder { get; set; } = string.Empty;
 
         #region IPromptConfiguration
 
@@ -35,9 +44,11 @@ namespace CommandPrompt
         {
             switch (option)
             {
-                case "Prompt": return $"{PromptPreFix}{CurrentFolder}{PromptPostFix}";
+                case "PromptPostFix": return PromptPostFix;
+                case "PromptPreFix": return PromptPreFix;
                 case "HistoryFile": return HistoryFile;
-                case "HistoryEnabled": return HistoryEnabled;
+                case "HistoryEnabled": return HistoryEnabled.ToString();
+                case "ApplicationHelp": return ApplicationHelp;
             }
 
             return string.Empty;
@@ -62,6 +73,14 @@ namespace CommandPrompt
             // Scan the Objects List for an concrete matching type and return it
             return Objects.FirstOrDefault(ob => ob.GetType() == type);
         }
+
+        public object ParameterConvert(string text, Type parameterType)
+        {
+            // Valid to return null as Parameter Type not coded for,
+            // either subclass this Configuration class or ask for type to be handled
+            return ParameterConversion.Convert(text, parameterType);
+        }
+
         #endregion
 
         /// <summary>

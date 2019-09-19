@@ -6,13 +6,14 @@ namespace CommandPrompt
     /// CommandText prompt attribute for an class 
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class PromptClassAttribute : Attribute
+    public sealed class PromptClassAttribute : Attribute
     {
         /// <summary>
         /// CommandText Prompt Class Attribute
         /// </summary>
         /// <param name="folder">The folder that can group prompt commands</param>
-        public PromptClassAttribute(string folder = null)
+        /// <remarks>folder=null is valid for a command that is in the root folder</remarks>
+        public PromptClassAttribute(string folder = null) 
         {
             Folder = folder;
         }
@@ -21,7 +22,7 @@ namespace CommandPrompt
         /// The folder that can be used to group prompt commands
         /// </summary>
         /// <remarks>Multiple class may share the same folder</remarks>
-        public string Folder { get; set; }
+        public string Folder { get; } // Set via constructors, required property
 
         /// <summary>
         /// Keep the class instance between command usages
@@ -30,8 +31,8 @@ namespace CommandPrompt
         public bool Keep { get; set; } = false;
 
         /// <summary>
-        /// Help summary for commands within this class
+        /// Description summary for commands within this class
         /// </summary>
-        public string Help { get; set; }
+        public string Description { get; set; }
     }
 }

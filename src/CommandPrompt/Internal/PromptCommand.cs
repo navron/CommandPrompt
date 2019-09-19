@@ -16,7 +16,7 @@ namespace CommandPrompt.Internal
         public bool StartWith { get; set; }
 
         /// <summary>
-        /// Help Text for this command
+        /// Description Text for this command
         /// </summary>
         public string HelpText { get; set; }    
         
@@ -24,6 +24,7 @@ namespace CommandPrompt.Internal
         /// The Method of this command
         /// </summary>
         public MethodInfo MethodInfo { get; set; }
+
         /// <summary>
         /// The Class where this method is located
         /// </summary>
@@ -40,5 +41,10 @@ namespace CommandPrompt.Internal
         /// </summary>
         /// <remarks>From Prompt Class Attribute</remarks>
         public string Folder { get; set; }
+
+        /// <summary>
+        /// Hide this command from the help and list systems
+        /// </summary>
+        public bool Hide { get; set; }
     }
 }
