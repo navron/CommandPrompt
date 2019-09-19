@@ -1,6 +1,7 @@
-﻿namespace CommandPrompt.Commands
+﻿using CommandPrompt.Internal;
+
+namespace CommandPrompt.Commands
 {
-    [PromptClass()]
     internal class OtherCmds
     {
         private readonly Prompt prompt;
@@ -12,9 +13,9 @@
 
 
         [Prompt("rescan", Help = "Re-scan the assemblies for prompt configurations", Hide = true)]
-        public void Rescan(string folder)
+        public void Rescan()
         {
-
+            BuildCommands.ScanForPrompt(prompt);
         }
     }
 }

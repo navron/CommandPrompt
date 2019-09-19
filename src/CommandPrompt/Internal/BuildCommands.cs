@@ -10,31 +10,34 @@ namespace CommandPrompt.Internal
     /// </summary>
     internal class BuildCommands
     {
-        internal static List<PromptCommand> ScanForPrompt(IPromptConfiguration configuration)
+        internal static void ScanForPrompt(Prompt prompt)
         {
-            var list = new List<PromptCommand>();
+            prompt.CommandClass = new List<PromptClass>(); // TODO Rework this code so the assemblies can be scanned in Parallel,  List<PromptClass>() is not concurrent
+            prompt.CommandList = new List<PromptCommand>();
 
-            var assemblies = configuration.GetScanForAssemblies;
-            foreach (var assembly in assemblies.AsParallel()) // in case of a large number of assemblies, do this in parallel
+            var assemblies = prompt.Configuration.GetScanForAssemblies;
+            foreach (var assembly in assemblies) // in case of a large number of assemblies, do this in parallel
             {
                 if (assembly.GlobalAssemblyCache) continue; // Don't want to scan Assembly in the global cache, this may become a defect 
 
                 foreach (var type in assembly.GetTypes())
                 {
+                    var test = prompt.CommandList.Count;
                     foreach (var methodInfo in type.GetMethods())
                     {
                         var attributes = methodInfo.GetCustomAttributes();
-                        list.AddRange(from attribute in attributes.OfType<PromptAttribute>()
-                            let info = GetPromptInformation(type, methodInfo, attribute)
-                            select GetPromptInformation(type, methodInfo, attribute));
+                        prompt.CommandList.AddRange(from attribute in attributes.OfType<PromptAttribute>()
+                                                    let info = GetPromptInformation(prompt, type, methodInfo, attribute)
+                                                    select GetPromptInformation(prompt, type, methodInfo, attribute));
                     }
+
+                    if (test != prompt.CommandList.Count) // Change, Stupid need better test
+                        prompt.CommandClass.Add(GetPromptClassInformation(type));
                 }
             }
-
-            return list;
         }
 
-        private static PromptCommand GetPromptInformation(Type classType, MethodInfo methodInfo, PromptAttribute attribute)
+        private static PromptCommand GetPromptInformation(Prompt prompt, Type classType, MethodInfo methodInfo, PromptAttribute attribute)
         {
             var command = new PromptCommand
             {
@@ -43,45 +46,32 @@ namespace CommandPrompt.Internal
                 MethodInfo = methodInfo,
                 ClassType = classType,
                 // If there are Any Parameters then set the Starts with flag -- TODO Should be able to remove this
-                StartWith = methodInfo.GetParameters().Length > 0
+                StartWith = methodInfo.GetParameters().Length > 0,
+                Hide = attribute.Hide
             };
-
-
-            // Check if the class of this Method has PromptClass Attribute and add that information to the command
-            if (command.ClassType.GetCustomAttributes(typeof(PromptClassAttribute), true).FirstOrDefault() is PromptClassAttribute promptClassAttribute)
-            {
-                command.KeepClassInstance = promptClassAttribute.Keep;
-                command.Folder = promptClassAttribute.Folder;
-            }
 
             return command;
         }
 
-        internal static List<PromptClass> ScanForPromptClasses(IPromptConfiguration configuration)
+
+        private static PromptClass GetPromptClassInformation(Type classType)
         {
-            var list = new List<PromptClass>();
-            var assemblies = configuration.GetScanForAssemblies;
-            foreach (var assembly in assemblies.AsParallel()) // in case of a large number of assemblies, do this in parallel
+            // Create a 
+            var promptClass = new PromptClass
             {
-                if (assembly.GlobalAssemblyCache) continue; // Don't want to scan Assembly in the global cache, this may become a defect 
+                TypeId = classType
+            };
 
-                foreach (var type in assembly.GetTypes())
-                {
-                    if (!(type.GetCustomAttributes(typeof(PromptClassAttribute), true).FirstOrDefault() is
-                        PromptClassAttribute promptClassAttribute)) continue;
-
-                    var folder = new PromptClass
-                    {
-                        TypeId = promptClassAttribute.TypeId,
-                        Folder = promptClassAttribute.Folder,
-                        KeepClassInstance = promptClassAttribute.Keep,
-                        Help = promptClassAttribute.Help
-                    };
-                    list.Add(folder);
-                }
+            // Check if the class of this Method has PromptClass Attribute and add that information to the command
+            if (classType.GetCustomAttributes(typeof(PromptClassAttribute), true).FirstOrDefault() is
+                PromptClassAttribute promptClassAttribute)
+            {
+                promptClass.KeepClassInstance = promptClassAttribute.Keep;
+                promptClass.Folder = promptClassAttribute.Folder;
+                promptClass.Help = promptClassAttribute.Help;
             }
 
-            return list;
+            return promptClass;
         }
     }
 }

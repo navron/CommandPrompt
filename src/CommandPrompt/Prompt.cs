@@ -46,8 +46,10 @@ namespace CommandPrompt
             HistoryFile.Save(configuration);
         }
 
+        internal string CurrentFolder { get; set; }
         internal readonly IPromptConfiguration Configuration;
-        internal readonly List<PromptCommand> CommandList;
+        internal List<PromptCommand> CommandList;
+        internal List<PromptClass> CommandClass;
 
         public Prompt(IPromptConfiguration configuration)
         {
@@ -58,8 +60,7 @@ namespace CommandPrompt
 
                 ReadLine.HistoryEnabled = string.Equals(Configuration.GetOption("HistoryEnabled"), true.ToString());
 
-                CommandClass = BuildCommands.ScanForPromptClasses(configuration);
-                CommandList = BuildCommands.ScanForPrompt(configuration);
+                BuildCommands.ScanForPrompt(this);
 
                 HistoryFile.Load(configuration);
             }
@@ -70,9 +71,6 @@ namespace CommandPrompt
                 Console.WriteLine(e);
             }
         }
-
-        internal List<PromptClass> CommandClass { get; set; }
-        internal string CurrentFolder { get; set; }
 
         /// <summary>
         /// Run the given command

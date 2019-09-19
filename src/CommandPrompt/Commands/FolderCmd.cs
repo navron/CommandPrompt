@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
-using CommandPrompt.Internal;
 
 namespace CommandPrompt.Commands
 {
@@ -44,7 +42,7 @@ namespace CommandPrompt.Commands
         {
             var list = prompt.CommandClass.GroupBy(g => g.Folder).Where(grouping => grouping.Key != null).ToList();
 
-            Console.WriteLine($"Folders:{list.Count}");
+            Console.WriteLine($"Folders");
             foreach (var grouping in list)
             {
                 Console.WriteLine($"  {grouping.Key}");
