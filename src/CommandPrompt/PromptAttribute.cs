@@ -34,7 +34,7 @@ namespace CommandPrompt
         public string HelpDetail { get; set; }
 
         /// <summary>
-        /// Hide the CommandText from the Help, but allow it to be executed
+        /// Hide the Command from the Help, but allow it to be executed
         /// </summary>
         public bool Hide { get; set; }
     }

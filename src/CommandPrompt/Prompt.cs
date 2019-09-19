@@ -24,8 +24,8 @@ namespace CommandPrompt
         public static async Task RunAsync(IPromptConfiguration configuration = null, CancellationToken token = default)
         {
             var prompt = new Prompt(configuration);
-            var cmd = string.Empty;
-            while (!string.Equals(cmd, "exit", StringComparison.OrdinalIgnoreCase))
+            var cmd = String.Empty;
+            while (!String.Equals(cmd, "exit", StringComparison.OrdinalIgnoreCase))
             {
                 var promptText = $"{prompt.Configuration.GetOption("PromptPreFix")}{prompt.CurrentFolder}{prompt.Configuration.GetOption("PromptPostFix")}";
                 // ReadLine is not await able, hence running as a Task.Run. Improve foreign project to 
@@ -33,7 +33,7 @@ namespace CommandPrompt
                 await Task.Run(() => cmd = ReadLine.Read(promptText), token);
                 try
                 {
-                    //  _ = prompt.ProcessPrompt(cmd, prompt.commandList, prompt.configuration);
+                    //  _ = pCmd.ProcessPrompt(commandText, pCmd.commandList, pCmd.configuration);
                     prompt.ProcessPrompt(cmd);
                 }
                 catch (Exception exception)
@@ -58,7 +58,7 @@ namespace CommandPrompt
                 // If Configuration is null, use default settings
                 Configuration = configuration ?? new PromptConfiguration();
 
-                ReadLine.HistoryEnabled = string.Equals(Configuration.GetOption("HistoryEnabled"), true.ToString());
+                ReadLine.HistoryEnabled = String.Equals(Configuration.GetOption("HistoryEnabled"), true.ToString());
 
                 BuildCommands.ScanForPrompt(this);
 
@@ -80,6 +80,8 @@ namespace CommandPrompt
         internal bool ProcessPrompt(string command) => ProcessPrompt(command, CommandList, Configuration);
         private bool ProcessPrompt(string cmd, List<PromptCommand> cmdList, IPromptConfiguration config)
         {
+            Warning = string.Empty;
+            
             var testCmd = cmd.ToLower();
             foreach (var command in cmdList)
             {
@@ -97,11 +99,12 @@ namespace CommandPrompt
                     return RunCommand(command, cmd, config);
                 }
             }
+            if(!string.IsNullOrEmpty(Warning)) Console.WriteLine(Warning);
             return false;
         }
 
         // Run the given command
-        private bool RunCommand(PromptCommand pCmd, string cmd, IPromptConfiguration config)
+        private bool RunCommand(PromptCommand pCmd, string commandText, IPromptConfiguration config)
         {
             var classInstance = GetCommandClassInstance(pCmd, config);
             if (classInstance == null) return false; // Something when wrong
@@ -111,60 +114,120 @@ namespace CommandPrompt
             var parameters = pCmd.MethodInfo.GetParameters();
             if (parameters.Length == 0)
             {
-                // This works fine
-                var result = pCmd.MethodInfo.Invoke(classInstance, null);
+                // Invoke with 'null' as the parameter array
+                pCmd.MethodInfo.Invoke(classInstance, null);
+                return true;
             }
-            else
+
+            // Remove the Command Text from the 
+            var parameterText = commandText.Remove(0, pCmd.CommandText.Length).Trim();
+
+            // Build a Parameter List to match the Parameters types of the Method
+            // If the Last parameter is a string, the reminding text after the split can be considered part of that parameter
+
+            // Split the text but all for escaped strings
+            var parametersSplit = GetParameterString(parameters, parameterText);
+            if (parametersSplit == null) return false;
+
+            var parameterList = new List<object>();
+            for (int i = 0; i < parameters.Length; i++)
             {
-                List<object> objectList = new List<object>();
-                var test = cmd.Remove(0, pCmd.CommandText.Length).Trim();
-                if (parameters.Length == 1)
+                var ob = Configuration.ParameterConvert(parametersSplit[i], parameters[i].ParameterType);
+                if (ob == null)
                 {
-                    if (ParameterConversion.Convert(test, parameters[0].ParameterType, out var ob)) // BUG HERE
-                    {
-                        objectList.Add(ob);
-                    }
-
-                }
-                else
-                {
-                    var parametersTest = ParameterConversion.SplitCommand(test).ToArray(); // TODO FIX THIS CODE
-                    if (parameters.Length != parametersTest.Length)
-                    {
-                        Console.WriteLine($"Error parsing command, incorrect parameter count");
-                        return false;
-                    }
-
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
-                        if (ParameterConversion.Convert(parametersTest[i], parameters[i].ParameterType, out var ob))
-                        {
-                            objectList.Add(ob);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Error parsing command, incorrect parameter type");
-                            return false;
-                        }
-                    }
+                    Warning = "Failed parsing command, incorrect parameter type";
+                    return false;
                 }
 
-                var result = pCmd.MethodInfo.Invoke(classInstance, objectList.ToArray());
+                parameterList.Add(ob);
             }
 
+            pCmd.MethodInfo.Invoke(classInstance, parameterList.ToArray());
             return true;
         }
+
+        internal string[] GetParameterString(ParameterInfo[] parameters, string text)
+        {
+            // Split the text but all for escaped strings
+            var parametersSplit = SplitCommand(text).ToArray();
+
+            // Perfect
+            if (parameters.Length == parametersSplit.Length) return parametersSplit;
+
+            if (parameters.Length < parametersSplit.Length)
+            {
+                if (parameters.Last().ParameterType == typeof(string))
+                {
+                    var last = string.Join(" ", parametersSplit.ToArray(), parameters.Length, parametersSplit.Length - parameters.Length);
+
+                    var list = new List<string>();
+                    for (int i = 0; i < parameters.Length - 1; i++)
+                    {
+                        list.Add(parametersSplit[i]);
+                    }
+
+                    list.Add(string.Join(" ", new[] {parametersSplit[parameters.Length - 1], last}));
+                    return list.ToArray();
+                }
+
+                if (Configuration.ParameterConvert(text, parameters.Last().ParameterType) != null)
+                {
+                    return new string[] {text};
+                }
+
+                Warning = "parameters count for method does not match given command";
+                return null; // Can't process text
+            }
+
+            if (parameters.Length > parametersSplit.Length)
+            {
+                for (int i = parametersSplit.Length; i < parameters.Length; i++)
+                {
+                    if (parameters[i].ParameterType == typeof(string) || IsNullable(parameters[i].ParameterType))
+                    {
+                        parametersSplit.Append(string.Empty);
+                    }
+                    else
+                    {
+                        Warning = "Non null-able type in parameter";
+                        return null;
+                    }
+                }
+
+                return parametersSplit;
+            }
+            Warning = "Missing required parameters for given command";
+            return null; // Can't process text
+        }
+
+        bool IsNullable(Type type) => Nullable.GetUnderlyingType(type) != null;
+
+        // Split the command into different parts, 
+        internal static List<string> SplitCommand(string text)  //TODO Write Unit Tests
+        {
+            var result = text.Split('"')
+                .Select((element, index) => index % 2 == 0  // If even index
+                    ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
+                    : new string[] { element })  // Keep the entire item
+                .SelectMany(element => element).ToList();
+            return result;
+        }
+
+        /// <summary>
+        /// If there is a Error processing a command, a message will be available here
+        /// </summary>
+        public string Warning { get; set; }
 
         #region Prompt Command Class Instance
 
         // Internal storage of previous class instance that was used to run commands
-        internal List<object> CmdPromptClasses = new List<object>();
+        internal List<object> StoreCommandPromptClasses = new List<object>();
 
         // Get the Class Instance for the command that is to be run
         private object GetCommandClassInstance(PromptCommand pCmd, IPromptConfiguration config)
         {
             // If this class instance exists in the configuration store then return it
-            var classInstance = CmdPromptClasses.FirstOrDefault(promptClass => promptClass.GetType() == pCmd.ClassType);
+            var classInstance = StoreCommandPromptClasses.FirstOrDefault(promptClass => promptClass.GetType() == pCmd.ClassType);
             if (classInstance != null)
             {
                 // Great Work Class Instance Already created
@@ -191,7 +254,7 @@ namespace CommandPrompt
             // If the Class has a Custom Attribute to keep this between commands, then store it in the configuration 
             if (pCmd.KeepClassInstance)
             {
-                CmdPromptClasses.Add(classInstance);
+                StoreCommandPromptClasses.Add(classInstance);
             }
 
             return classInstance;

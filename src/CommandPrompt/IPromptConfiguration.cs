@@ -28,5 +28,13 @@ namespace CommandPrompt
         /// <remarks>Objects may be stored between commands, </remarks>
         object GetObjectOfType(Type type);
 
+        /// <summary>
+        /// Converts a string to an parameter type
+        /// </summary>
+        /// <param name="text">string to be converted</param>
+        /// <param name="parameterType">The Type of the parameter to be converted to</param>
+        /// <returns>The Object that will be passed to the method for the given parameter</returns>
+        /// <remarks>This method can be extended to allow for custom or missing conversions</remarks>
+        object ParameterConvert(string text, Type parameterType);
     }
 }
