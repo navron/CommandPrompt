@@ -16,7 +16,7 @@ namespace CommandPrompt.Internal
         public bool StartWith { get; set; }
 
         /// <summary>
-        /// Help Text for this command
+        /// Description Text for this command
         /// </summary>
         public string HelpText { get; set; }    
         

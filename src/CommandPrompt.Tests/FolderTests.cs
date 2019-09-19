@@ -14,15 +14,15 @@ namespace CommandPrompt.Tests
             var prompt = new Prompt(config);
 
             var cmd = $"cd bill";
-            prompt.ProcessPrompt(cmd);
+            prompt.Run(cmd);
             prompt.CurrentFolder.Should().Be("Bill");
 
             cmd = $"cd fred";
-            prompt.ProcessPrompt(cmd);
+            prompt.Run(cmd);
             prompt.CurrentFolder.Should().Be("Fred");
 
             cmd = $"cd ..";
-            prompt.ProcessPrompt(cmd);
+            prompt.Run(cmd);
             prompt.CurrentFolder.Should().BeEmpty();
         }
     }

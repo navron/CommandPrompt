@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CommandPrompt.Tests.TestData
+namespace CommandPrompt.Tests.RunTestData
 {
     [PromptClass]
     public class Class1Simple

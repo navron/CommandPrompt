@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace CommandPrompt.Tests
+﻿namespace CommandPrompt.Tests
 {
     public class PromptTests
     {

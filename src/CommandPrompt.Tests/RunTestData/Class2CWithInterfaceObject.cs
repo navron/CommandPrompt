@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace CommandPrompt.Tests.TestData
+namespace CommandPrompt.Tests.RunTestData
 {
-    [PromptClass(Keep = true, Help = "Testing that a class can be constructor with an object from interface")]
+    [PromptClass(Keep = true, Description = "Testing that a class can be constructor with an object from interface")]
     public class Class2CWithInterfaceObject
     {
         public Class2CWithInterfaceObject(IData2 data)

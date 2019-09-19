@@ -6,6 +6,9 @@ using CommandPrompt.Internal;
 
 namespace CommandPrompt.Commands
 {
+    /// <summary>
+    /// Help Commands for the Command Prompt Library
+    /// </summary>
     internal class HelpCmd
     {
         private readonly Prompt prompt;
@@ -25,31 +28,46 @@ namespace CommandPrompt.Commands
             //   Show the summary help of each command group by folder and sorted 
             // 2. If the command give is a command then show the detail help for that command
 
+            var promptCommands = prompt.PromptCommands;
+            var promptClasses = prompt.PromptClasses;
+            if (!string.IsNullOrEmpty(prompt.CurrentFolder))
+            {
+                promptCommands = promptCommands.Where(c =>string.Equals(c.Folder, prompt.CurrentFolder, StringComparison.OrdinalIgnoreCase)).ToList();
+                promptClasses = promptClasses.Where(c => string.Equals(c.Folder, prompt.CurrentFolder, StringComparison.OrdinalIgnoreCase)).ToList();
+                // If the help for the command is null and because we are in a folder, only show the folder help
+                if (string.IsNullOrEmpty(command))
+                {
+                    command = prompt.CurrentFolder;
+                }
+            }
+
+
             var str = new StringBuilder();
             // Does the given 'command' match any commands
-            if (prompt.CommandList.Any(c => string.Equals(c.CommandText, command.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (promptCommands.Any(c => string.Equals(c.CommandText, command.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
-                str.Append(PrintCommandDetailHelp(command));
+                str.Append(PrintCommandDetailHelp(command, promptCommands));
             }
             // Does the given 'command' match any Folder names
-            else if (prompt.CommandClass.Any(c => string.Equals(c.Folder, command.Trim(), StringComparison.OrdinalIgnoreCase)))
+            else if (promptClasses.Any(c => string.Equals(c.Folder, command.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
-                str.Append(PrintFolderHelp(command));
+                str.Append(PrintFolderHelp(command, promptClasses, promptCommands));
             }
             // Other wise Print the Application help 
             else
             {
-                str.Append(PrintApplicationHelp());
+                var appHelp = prompt.Configuration.GetOption("ApplicationHelp");
+                str.Append(PrintApplicationHelp(appHelp, promptClasses, promptCommands));
             }
 
             Console.WriteLine(str.ToString());
         }
 
-        #region Command Help
+        #region Command Description
 
-        private StringBuilder PrintCommandDetailHelp(string command)
+        private static StringBuilder PrintCommandDetailHelp(string command, List<PromptCommand> commandList)
         {
-            var cmdList = prompt.CommandList.Where(c => string.Equals(c.CommandText, command.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+            var cmdList = commandList.Where(c => string.Equals(c.CommandText, command.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
 
             var str = new StringBuilder();
             foreach (var promptCommand in cmdList)
@@ -59,12 +77,12 @@ namespace CommandPrompt.Commands
             return str;
         }
 
-        private StringBuilder PrintCommandSummaryHelp(PromptCommand cmd, int indent = Indent)
+        private static StringBuilder PrintCommandSummaryHelp(PromptCommand cmd, int indent = Indent)
         {
             return new StringBuilder().AppendLine($"{string.Empty.PadRight(indent)}{cmd.CommandText.PadRight(PadCommand)} {cmd.HelpText,-30}");
         }
 
-        private StringBuilder PrintCommandHelpDetails(PromptCommand cmd, int indent = Indent)
+        private static StringBuilder PrintCommandHelpDetails(PromptCommand cmd, int indent = Indent)
         {
             var str = new StringBuilder().Append(PrintCommandSummaryHelp(cmd, indent));
             var list = cmd.MethodInfo.GetParameters();
@@ -77,13 +95,13 @@ namespace CommandPrompt.Commands
 
         #endregion
 
-        #region Folder Help
+        #region Folder Description
 
-        private StringBuilder PrintFolderHelp(string folder)
+        private static StringBuilder PrintFolderHelp(string folder, List<PromptClass> promptClasses, List<PromptCommand> commandList)
         {
             var cmds = new List<PromptCommand>();
-            var folders = prompt.CommandClass.Where(c => string.Equals(c.Folder, folder, StringComparison.OrdinalIgnoreCase)).ToList();
-            folders.ForEach(f=>cmds.AddRange(prompt.CommandList.Where(c => (c.ClassType == f.TypeId || c.ClassType == null) && !c.Hide)));
+            var folders = promptClasses.Where(c => string.Equals(c.Folder, folder, StringComparison.OrdinalIgnoreCase)).ToList();
+            folders.ForEach(f=>cmds.AddRange(commandList.Where(c => (c.ClassType == f.TypeId || c.ClassType == null) && !c.Hide)));
 
             var str = new StringBuilder();
             var folderName = string.IsNullOrEmpty(folder) ? "Root" : folder;
@@ -98,22 +116,21 @@ namespace CommandPrompt.Commands
 
         #endregion
 
-        #region ApplicationH Help
-        private StringBuilder PrintApplicationHelp()
+        #region ApplicationH Description
+        private static StringBuilder PrintApplicationHelp(string applicationHelp, List<PromptClass> promptClasses, List<PromptCommand> commandList)
         {
-            var appHelp = prompt.Configuration.GetOption("ApplicationHelp");
-            if (string.IsNullOrEmpty(appHelp)) return null;
+            if (string.IsNullOrEmpty(applicationHelp)) return null;
 
-            var folders = prompt.CommandClass;
+            var folders = promptClasses;
             folders.Sort((x, y) => string.Compare(x.Folder, y.Folder, StringComparison.Ordinal));
             var groupFolders = folders.GroupBy(g => g.Folder);
 
             var str = new StringBuilder();
-            str.AppendLine(LineBreak).AppendLine(appHelp).AppendLine(LineBreak);
+            str.AppendLine(LineBreak).AppendLine(applicationHelp).AppendLine(LineBreak);
 
             foreach (IGrouping<string, PromptClass> grouping in groupFolders)
             {
-                str.AppendLine().Append(PrintFolderHelp(grouping.Key));
+                str.AppendLine().Append(PrintFolderHelp(grouping.Key, promptClasses, commandList));
             }
             return str;
         }

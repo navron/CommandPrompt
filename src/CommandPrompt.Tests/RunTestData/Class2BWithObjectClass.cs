@@ -1,10 +1,9 @@
 ﻿using System;
 
-
-namespace CommandPrompt.Tests.TestData
+namespace CommandPrompt.Tests.RunTestData
 {
     // This class is kept between Commands 
-    [PromptClass("Class2b", Help = "Class2b's Commands", Keep = true)]
+    [PromptClass("Class2b", Description = "Class2b's Commands", Keep = true)]
     public class Class2BWithObjectClass
     {
         public Class2BWithObjectClass(Data2b dataObject)

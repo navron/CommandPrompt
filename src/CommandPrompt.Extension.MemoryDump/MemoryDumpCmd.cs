@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CommandPrompt.Extension.MemoryDump
+﻿namespace CommandPrompt.Extension.MemoryDump
 {
     class MemoryDumpCmd
     {

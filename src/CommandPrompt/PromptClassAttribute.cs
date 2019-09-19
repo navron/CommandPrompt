@@ -31,8 +31,8 @@ namespace CommandPrompt
         public bool Keep { get; set; } = false;
 
         /// <summary>
-        /// Help summary for commands within this class
+        /// Description summary for commands within this class
         /// </summary>
-        public string Help { get; set; }
+        public string Description { get; set; }
     }
 }

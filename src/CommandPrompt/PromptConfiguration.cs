@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -28,7 +27,7 @@ namespace CommandPrompt
         public bool HistoryEnabled { get; set; } = true;
 
         /// <summary>
-        /// Sets the Application Help
+        /// Sets the Application Description
         /// </summary>
         public string ApplicationHelp { get; set; }
 

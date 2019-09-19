@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CommandPrompt.Tests.FolderTestData
+﻿namespace CommandPrompt.Tests.FolderTestData
 {
-    [PromptClass("Bill")]
+    [PromptClass("Bill", Description = "Bills Folder")]
     public class BillFolder
     {
         [Prompt("DoBill")]

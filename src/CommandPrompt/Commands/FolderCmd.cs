@@ -25,7 +25,7 @@ namespace CommandPrompt.Commands
             }
 
             // use dos or unix format?
-            var isFolderValid = prompt.CommandClass.FirstOrDefault(c => string.Equals(c.Folder, folder, StringComparison.OrdinalIgnoreCase));
+            var isFolderValid = prompt.PromptClasses.FirstOrDefault(c => string.Equals(c.Folder, folder, StringComparison.OrdinalIgnoreCase));
             if (isFolderValid != null)
             {
                 prompt.CurrentFolder = isFolderValid.Folder;
@@ -40,7 +40,7 @@ namespace CommandPrompt.Commands
         [Prompt("List Folders", Help = "List All Folders")]
         public void ListFolders()
         {
-            var list = prompt.CommandClass.GroupBy(g => g.Folder).Where(grouping => grouping.Key != null).ToList();
+            var list = prompt.PromptClasses.GroupBy(g => g.Folder).Where(grouping => grouping.Key != null).ToList();
 
             Console.WriteLine($"Folders");
             foreach (var grouping in list)

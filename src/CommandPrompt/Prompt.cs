@@ -24,8 +24,8 @@ namespace CommandPrompt
         public static async Task RunAsync(IPromptConfiguration configuration = null, CancellationToken token = default)
         {
             var prompt = new Prompt(configuration);
-            var cmd = String.Empty;
-            while (!String.Equals(cmd, "exit", StringComparison.OrdinalIgnoreCase))
+            var cmd = string.Empty;
+            while (!string.Equals(cmd, "exit", StringComparison.OrdinalIgnoreCase))
             {
                 var promptText = $"{prompt.Configuration.GetOption("PromptPreFix")}{prompt.CurrentFolder}{prompt.Configuration.GetOption("PromptPostFix")}";
                 // ReadLine is not await able, hence running as a Task.Run. Improve foreign project to 
@@ -33,8 +33,7 @@ namespace CommandPrompt
                 await Task.Run(() => cmd = ReadLine.Read(promptText), token);
                 try
                 {
-                    //  _ = pCmd.ProcessPrompt(commandText, pCmd.commandList, pCmd.configuration);
-                    prompt.ProcessPrompt(cmd);
+                    prompt.Run(cmd);
                 }
                 catch (Exception exception)
                 {
@@ -48,8 +47,8 @@ namespace CommandPrompt
 
         internal string CurrentFolder { get; set; }
         internal readonly IPromptConfiguration Configuration;
-        internal List<PromptCommand> CommandList;
-        internal List<PromptClass> CommandClass;
+        internal List<PromptCommand> PromptCommands;
+        internal List<PromptClass> PromptClasses;
 
         public Prompt(IPromptConfiguration configuration)
         {
@@ -58,7 +57,7 @@ namespace CommandPrompt
                 // If Configuration is null, use default settings
                 Configuration = configuration ?? new PromptConfiguration();
 
-                ReadLine.HistoryEnabled = String.Equals(Configuration.GetOption("HistoryEnabled"), true.ToString());
+                ReadLine.HistoryEnabled = string.Equals(Configuration.GetOption("HistoryEnabled"), true.ToString());
 
                 BuildCommands.ScanForPrompt(this);
 
@@ -75,9 +74,9 @@ namespace CommandPrompt
         /// <summary>
         /// Run the given command
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="text">The Command to run with any given parameters</param>
         /// <returns>true if an command was found and ran</returns>
-        internal bool ProcessPrompt(string command) => ProcessPrompt(command, CommandList, Configuration);
+        public bool Run(string text) => ProcessPrompt(text, PromptCommands, Configuration);
         private bool ProcessPrompt(string cmd, List<PromptCommand> cmdList, IPromptConfiguration config)
         {
             Warning = string.Empty;
@@ -166,13 +165,13 @@ namespace CommandPrompt
                         list.Add(parametersSplit[i]);
                     }
 
-                    list.Add(string.Join(" ", new[] {parametersSplit[parameters.Length - 1], last}));
+                    list.Add(string.Join(" ", parametersSplit[parameters.Length - 1], last));
                     return list.ToArray();
                 }
 
                 if (Configuration.ParameterConvert(text, parameters.Last().ParameterType) != null)
                 {
-                    return new string[] {text};
+                    return new[] {text};
                 }
 
                 Warning = "parameters count for method does not match given command";
@@ -185,7 +184,9 @@ namespace CommandPrompt
                 {
                     if (parameters[i].ParameterType == typeof(string) || IsNullable(parameters[i].ParameterType))
                     {
-                        parametersSplit.Append(string.Empty);
+                        var list = parametersSplit.ToList();
+                        list.Add(string.Empty);
+                        parametersSplit = list.ToArray();
                     }
                     else
                     {
@@ -203,12 +204,12 @@ namespace CommandPrompt
         bool IsNullable(Type type) => Nullable.GetUnderlyingType(type) != null;
 
         // Split the command into different parts, 
-        internal static List<string> SplitCommand(string text)  //TODO Write Unit Tests
+        internal static List<string> SplitCommand(string text)
         {
             var result = text.Split('"')
                 .Select((element, index) => index % 2 == 0  // If even index
                     ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
-                    : new string[] { element })  // Keep the entire item
+                    : new[] { element })  // Keep the entire item
                 .SelectMany(element => element).ToList();
             return result;
         }

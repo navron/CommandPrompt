@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMember.Global
@@ -10,6 +9,7 @@ namespace CommandPrompt.Tests
     {
         [Theory]
         [InlineData("CanDo", "")]
+        [InlineData("DoString", "")]
         [InlineData("DoString", "Test")]
         [InlineData("DoString","Test String")]
         [InlineData("DoString", "Test String Number3")]
@@ -26,7 +26,7 @@ namespace CommandPrompt.Tests
             var prompt = new Prompt(config);
 
             var cmd = $"{promptCmd} {pramText}".Trim();
-            prompt.ProcessPrompt(cmd);
+            prompt.Run(cmd);
             CanDoPrompt.MethodRun.Should().Be(promptCmd);
             CanDoPrompt.MethodValue.Should().Be(pramText);
         }

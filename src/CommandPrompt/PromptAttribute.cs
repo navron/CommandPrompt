@@ -24,7 +24,7 @@ namespace CommandPrompt
         public string Command { get; } // Set via constructors, required property
 
         /// <summary>
-        /// Help Topic for this command
+        /// Description Topic for this command
         /// </summary>
         public string Help { get; set; }
 
@@ -34,7 +34,7 @@ namespace CommandPrompt
         public string HelpDetail { get; set; }
 
         /// <summary>
-        /// Hide the Command from the Help, but allow it to be executed
+        /// Hide the Command from the Description, but allow it to be executed
         /// </summary>
         public bool Hide { get; set; }
     }

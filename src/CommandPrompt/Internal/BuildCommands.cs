@@ -12,8 +12,8 @@ namespace CommandPrompt.Internal
     {
         internal static void ScanForPrompt(Prompt prompt)
         {
-            prompt.CommandClass = new List<PromptClass>(); // TODO Rework this code so the assemblies can be scanned in Parallel,  List<PromptClass>() is not concurrent
-            prompt.CommandList = new List<PromptCommand>();
+            prompt.PromptClasses = new List<PromptClass>(); // TODO Rework this code so the assemblies can be scanned in Parallel,  List<PromptClass>() is not concurrent
+            prompt.PromptCommands = new List<PromptCommand>();
 
             var assemblies = prompt.Configuration.GetScanForAssemblies;
             foreach (var assembly in assemblies) // in case of a large number of assemblies, do this in parallel
@@ -22,17 +22,17 @@ namespace CommandPrompt.Internal
 
                 foreach (var type in assembly.GetTypes())
                 {
-                    var test = prompt.CommandList.Count;
+                    var test = prompt.PromptCommands.Count;
                     foreach (var methodInfo in type.GetMethods())
                     {
                         var attributes = methodInfo.GetCustomAttributes();
-                        prompt.CommandList.AddRange(from attribute in attributes.OfType<PromptAttribute>()
+                        prompt.PromptCommands.AddRange(from attribute in attributes.OfType<PromptAttribute>()
                                                     let info = GetPromptInformation(prompt, type, methodInfo, attribute)
                                                     select GetPromptInformation(prompt, type, methodInfo, attribute));
                     }
 
-                    if (test != prompt.CommandList.Count) // Change, Stupid need better test
-                        prompt.CommandClass.Add(GetPromptClassInformation(type));
+                    if (test != prompt.PromptCommands.Count) // Change, Stupid need better test
+                        prompt.PromptClasses.Add(GetPromptClassInformation(type));
                 }
             }
         }
@@ -49,6 +49,14 @@ namespace CommandPrompt.Internal
                 StartWith = methodInfo.GetParameters().Length > 0,
                 Hide = attribute.Hide
             };
+
+            // Check if the class of this Method has PromptClass Attribute and add that information to the command
+            if (classType.GetCustomAttributes(typeof(PromptClassAttribute), true).FirstOrDefault() is
+                PromptClassAttribute promptClassAttribute)
+            {
+                command.KeepClassInstance = promptClassAttribute.Keep;
+                command.Folder = promptClassAttribute.Folder;
+            }
 
             return command;
         }
@@ -68,7 +76,7 @@ namespace CommandPrompt.Internal
             {
                 promptClass.KeepClassInstance = promptClassAttribute.Keep;
                 promptClass.Folder = promptClassAttribute.Folder;
-                promptClass.Help = promptClassAttribute.Help;
+                promptClass.Help = promptClassAttribute.Description;
             }
 
             return promptClass;
