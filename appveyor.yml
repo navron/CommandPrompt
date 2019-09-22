@@ -1,5 +1,5 @@
 # Beta Release starting very zero
-version: '1.1.{build}'
+version: '1.2.{build}'
 
 dotnet_csproj:
   patch: true
@@ -25,7 +25,7 @@ build_script:
   - dotnet build .\CommandPrompt.sln
 
 test_script:
-  - dotnet test .\tests\CommandPrompt.Tests\CommandPrompt.Tests.csproj
+  - dotnet test .\src\CommandPrompt.Tests\CommandPrompt.Tests.csproj
 
 after_test:
   - echo  APPVEYOR_BUILD_VERSION = %APPVEYOR_BUILD_VERSION%

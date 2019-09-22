@@ -2,14 +2,40 @@
 
 namespace CommandPrompt
 {
-    public class PromptAttribute : Attribute
+    /// <summary>
+    ///  CommandText prompt attribute for an method 
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public sealed class PromptAttribute : Attribute
     {
-        public PromptAttribute(string cmd)
+        /// <summary>
+        /// The CommandText prompt method attribute, for describing the
+        /// </summary>
+        /// <param name="command">The command that</param>
+        public PromptAttribute(string command)
         {
-            Command = cmd;
+            Command = command;
         }
-        public string Command { get; set; }
 
-        public string HelpText { get; set; }
+        /// <summary>
+        /// The first word of the text entered on the command prompt. 
+        /// </summary>
+        /// <remarks>The command is the </remarks>
+        public string Command { get; } // Set via constructors, required property
+
+        /// <summary>
+        /// Description Topic for this command
+        /// </summary>
+        public string Help { get; set; }
+
+        /// <summary>
+        /// Detail help of the command, may be multi-line
+        /// </summary>
+        public string HelpDetail { get; set; }
+
+        /// <summary>
+        /// Hide the Command from the Description, but allow it to be executed
+        /// </summary>
+        public bool Hide { get; set; }
     }
 }

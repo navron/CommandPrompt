@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Data;
 
-namespace CommandPrompt.Tests.TestData
+namespace CommandPrompt.Tests.RunTestData
 {
-    [PromptClass(Keep = true, Help = "Testing that a class can be constructor with an object from interface")]
+    [PromptClass(Keep = true, Description = "Testing that a class can be constructor with an object from interface")]
     public class Class2CWithInterfaceObject
     {
         public Class2CWithInterfaceObject(IData2 data)
@@ -15,7 +14,7 @@ namespace CommandPrompt.Tests.TestData
 
         public Data2C DataObject { get; set; }
 
-        [Prompt("2cCmd1", HelpText = "Class2c's first command method ")]
+        [Prompt("2cCmd1", Help = "Class2c's first command method ")]
         public void Cmd1()
         {
             Console.WriteLine($"Running Method 'Class2b Cmd1'");
